@@ -1,0 +1,104 @@
+<html>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<style type="text/css">
+
+#input, #suggested{
+    margin-right:10px;
+    float:left;
+}
+
+#suggested ul{
+    background-color: darkgrey;
+    width: 120px;
+    height: 300px;
+    overflow-y: scroll;
+    border-radius: 5px;
+}
+#suggested ul li{
+    list-style-type: none;
+    height: 30px;
+    padding-top: 1px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 16px;
+}
+#suggested ul li:hover{
+    background-color:beige;
+    cursor: pointer;
+}
+</style>
+<body>
+<center>
+
+<h2>NLP ASSIGNMENT</h2>
+<br/><br/>
+<h5> SOUMYA KANTI DAS <br/>
+ROLL : CS1729 </br>
+M.Tech. II'nd Year
+</h5>
+</center>
+<br/>
+<p>
+    <ul>
+        <li>Next Word....</li>
+        <br/>
+        <div id='input'>Enter the Text:</br></br>
+            <textarea rows=12 cols=70 id="textinp" name="textinp"></textarea>
+        </div>
+        <div id="suggested"></div>
+    </ul>
+</p>
+</body>
+
+
+</html>
+
+
+<script>
+function get_last_word(words) {
+    var n = words.split(" ");
+    return n[n.length - 1];
+}
+function IsPunctuation(c)
+{
+    var cc = c.charCodeAt(0);
+    if ( ( cc >= 20 && cc <= 0x2F ) ||
+        ( cc >= 0x3A && cc <= 0x40 ) ||
+        ( cc >= 0x5B && cc <= 0x60 ) ||
+        ( cc >= 0x7B && cc <= 0x7E ) ){
+            return true ;
+        }
+        return false ;
+}
+
+$(document).ready(function(){
+    $('#textinp').keyup(function(){
+        var text = $(this).val();
+        $('#suggested').fadeOut();
+        if(text != '' && (text[text.length-1] == " " || IsPunctuation(text[text.length - 1])))
+        {
+            var last_word = get_last_word(text.trim());
+            last_word = last_word.toLowerCase();
+            console.log("last word " + last_word)
+            $.ajax({
+                type : "POST",
+                url: "server",
+                data:{query:last_word},
+                success:function(data)
+                {
+                    console.log(data)
+                    $('#suggested').fadeIn();
+                    $('#suggested').html(data);
+                }
+            });
+        }
+    });
+
+    $(document).on('click', 'li', function(){
+        var current_val =  $('#textinp').val()
+        $('#textinp').val(current_val + $(this).text());
+        $('#suggested').fadeOut();
+        $('#textinp').focus();
+    });
+});
+
+</script>
